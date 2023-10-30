@@ -12,7 +12,7 @@
         <div class="i-container">
             <div class="inputs" id="input-file">
                 <div class="input-data">
-                    <input type="file">
+                    <input type="file" accept="image/*" id="imageInput">
                     <label style="font-size: 18px; font-style: oblique;">Selecciona la imagen a vectorizar</label>
                 </div>
             </div>
@@ -49,10 +49,10 @@
         </div>
         <div class="o-container">
             <div class="display">
-                <img src="" alt="">
+                <canvas id="canvas1"></canvas>
             </div>
         </div>
     </div>
-    <script src="code.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
