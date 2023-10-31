@@ -5,6 +5,7 @@ canvas.height = 300;
 
 const imgInput = document.getElementById('imageInput');
 const image = new Image();
+const button = document.getElementById('input-button');
 
 imgInput.addEventListener('change', function(e) {
     var file = e.target.files[0];
@@ -35,3 +36,22 @@ image.addEventListener('load', function(){
     scannedImage.data = scannedData;
     ctx.putImageData(scannedImage, 0, 0);
 })
+
+const maxGens = document.getElementById('input1');      // maximo de generaciones
+const individuos = document.getElementById('input2');   // individuos de la poblacion
+const percIndivsSelected = document.getElementById('input3');   // % individuos seleccionados por generacion
+const percIndivsMutb = document.getElementById('input4');   // % individuos mutables
+const percIndivsComb = document.getElementById('input5');   // % individuos combinables
+
+
+function verifyParameters(){
+
+    if(maxGens.value != '' && individuos.value != '' && percIndivsSelected.value != ''
+    && percIndivsMutb.value != '' && percIndivsComb.value != ''){
+
+        start()
+    } else{
+        alert('ERROR: El algoritmo no puede iniciar hasta que se llenen todos los requisitos solicitados. Inténtelo de nuevo!')
+    }
+
+}
