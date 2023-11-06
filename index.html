@@ -6,7 +6,8 @@
 <body>
     <div class="banner">
         <h2>Image Vectorization with Genetic Algorithms</h2>
-        <p style="font-size: 15px; padding-top: 5px; padding-bottom: 5px;">Samuel Valverde & Erick Kauffmann</p>
+        <p style="font-size: 1.2rem; padding-top: 5px; padding-bottom: 5px;">
+            Samuel Valverde & Erick Kauffmann</p>
     </div>
     <div class="main-container">
         <div class="i-container">
@@ -52,10 +53,14 @@
         </div>
         <div class="o-container">
             <div class="display">
-                <canvas id="canvas1"></canvas>
+                <div class="timer">
+                    Tiempo total
+                </div>
+                <canvas id="canvasOutput"></canvas>
             </div>
         </div>
     </div>
     <script src="script.js"></script>
+    <script async src="https://docs.opencv.org/3.4.0/opencv.js" type="text/javascript"></script>
 </body>
 </html>

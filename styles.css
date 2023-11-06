@@ -24,7 +24,7 @@ body{
     justify-content: center;
     align-items: center;
     color: #f3f3f3;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     font-weight: 500;
     line-height: 1.2;
     padding-bottom: 25px;
@@ -97,12 +97,24 @@ body{
     justify-content: center;
     position: relative;
 }
-#canvas1{
-    border: 3px solid #fff;
+#canvasOutput{
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.5);
     top: 50%;
     left: 50%;
     position: absolute;
-    width: 450px;
-    height: 300px;
+    width: 75%;
+    height: 60%;
     transform: translate(-50%, -50%);
 }
+.o-container .display .timer{
+    display: flex;
+    position: absolute;
+    width: 20%;
+    height: 10%;
+    top: 0;
+    right: 0;
+    background-color: #ffffff;
+    color: #fff;
+    padding: 10px;
+}
+
