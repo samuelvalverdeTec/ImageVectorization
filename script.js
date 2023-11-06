@@ -1,3 +1,5 @@
+import { Poblacion, Generacion, Individuo } from './objects.js';
+
 const canvas = document.getElementById('canvasOutput');
 const ctx = canvas.getContext('2d');
 canvas.width = 450;
