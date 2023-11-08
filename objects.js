@@ -1,8 +1,8 @@
 class Poblacion {
 
-    constructor(metaIndiv) {
+    constructor(maxGeneraciones) {
         this.generaciones = [];    // array de generaciones
-        this.meta = metaIndiv;
+        this.max = maxGeneraciones;
     }
 
     // Other methods and properties
@@ -10,9 +10,14 @@ class Poblacion {
 
 class Generacion {
 
-    constructor(individuos) {
+    constructor(size, target) {
         this.individuos = [];
-        this.id = 1;
+        this.number = 1;            // numero de generacion
+        this.size = size || 1;
+
+        for (let i = 0; i < size; i += 1) {
+            this.individuos.push(new Individuo(target, canvas.width, canvas.height));
+        }
     }
 
     // Other methods and properties
@@ -20,11 +25,30 @@ class Generacion {
 
 class Individuo {
 
-    constructor() {
-        this.score = 100;
+    constructor(target, width, height) {
+        this.target = target;
+        this.match = 0;
+        this.value = function() {
+
+            const pixelArray = new Array(height);
+            for (let y = 0; y < height; y++) {
+                pixelArray[y] = new Array(width);
+
+                for (let x = 0; x < width; x++) {
+                    const red = Math.random() < 0.5 ? 0 : 255;   // 0 or 255
+                    const green = Math.random() < 0.5 ? 0 : 255;   // 0 or 255
+                    const blue = Math.random() < 0.5 ? 0 : 255;   // 0 or 255
+                    const alpha = 1;
+                    pixelArray[y][x] = [red, green, blue, alpha];
+                }
+            }
+
+        }
     }
 
-    // Other methods and properties
+    fitness(){
+
+    }
 }
 
-export { Poblacion, Generacion, Individuo };
+//export { Poblacion, Generacion, Individuo };
