@@ -1,4 +1,4 @@
-//import { Poblacion, Generacion, Individuo } from './objects.js';
+import { Poblacion, Generacion, Individuo } from './objects.js';
 
 const canvas = document.getElementById('canvasOutput');
 const ctx = canvas.getContext('2d');
@@ -12,66 +12,28 @@ const individuos = document.getElementById('input2');   // individuos de la pobl
 const percIndivsSelected = document.getElementById('input3');   // % individuos seleccionados por generacion
 const percIndivsMutb = document.getElementById('input4');   // % individuos mutables
 const percIndivsComb = document.getElementById('input5');   // % individuos combinables
+const numGen = 0;
+const found = false;
 
-class Poblacion {
+// mat.matSize = (height, length)
 
-    constructor(maxGeneraciones) {
-        this.generaciones = [];    // array de generaciones
-        this.max = maxGeneraciones;
-    }
+function createInitialGen(){
 
-    // Other methods and properties
-}
+    var gen = new Generacion(numGen+1, individuos, mat);
 
-class Generacion {
-
-    constructor(size, target) {
-        this.individuos = [];
-        this.number = 1;            // numero de generacion
-        this.size = size || 1;
-
-        for (let i = 0; i < size; i += 1) {
-            this.individuos.push(new Individuo(target, canvas.width, canvas.height));
-        }
-    }
-
-    // Other methods and properties
-}
-
-class Individuo {
-
-    constructor(target, width, height) {
-        this.target = target;
-        this.match = 0;
-        this.value = function() {
-
-            const pixelArray = new Array(height);
-            for (let y = 0; y < height; y++) {
-                pixelArray[y] = new Array(width);
-
-                for (let x = 0; x < width; x++) {
-                    const red = Math.random() < 0.5 ? 0 : 255;   // 0 or 255
-                    const green = Math.random() < 0.5 ? 0 : 255;   // 0 or 255
-                    const blue = Math.random() < 0.5 ? 0 : 255;   // 0 or 255
-                    const alpha = 1;
-                    pixelArray[y][x] = [red, green, blue, alpha];
-                }
-            }
-
-        }
-    }
-
-    fitness(){
-
-    }
 }
 
 function start(){
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
-    var poblacion = new Poblacion(parseInt(maxGens.value));
-    console.log('Starting........')
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    const mat = cv.imread(scannedImg);
+    const width = mat.matSize[1];
+    const height = mat.matSize[0];
+
+    var poblacion = new Poblacion(parseInt(maxGens.value));
+    console.log('\nStarting...\n');
+    createInitialGen();
 }
 
 imgInput.addEventListener('change', function(e) {
@@ -85,23 +47,16 @@ imgInput.addEventListener('change', function(e) {
         reader.readAsDataURL(file);
     }
 });
+
 image.addEventListener('load', function(){
     ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-    const scannedImage = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    ctx.putImageData(scannedImage, 0, 0);
+    const scannedImg = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    ctx.putImageData(scannedImg, 0, 0);
 })
-function paramsToInt(){
-    console.log('Parameters to int')
-    maxGens.value = parseInt(maxGens.value);
-    individuos.value = parseInt(individuos.value);
-    percIndivsSelected.value = parseInt(percIndivsSelected.value);
-    percIndivsMutb.value = parseInt(percIndivsMutb.value);
-    percIndivsComb.value = parseInt(percIndivsComb.value);
-}
+
 function verifyParameters(){
     if(maxGens.value != '' && individuos.value != '' && percIndivsSelected.value != ''
     && percIndivsMutb.value != '' && percIndivsComb.value != ''){
-        paramsToInt();
         let percsParameters = parseInt(percIndivsSelected.value) + parseInt(percIndivsMutb.value) + parseInt(percIndivsComb.value);
         console.log(percsParameters);
         if(percsParameters != 100){
