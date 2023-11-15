@@ -1,9 +1,9 @@
-import { Poblacion, Generacion, Individuo } from './objects.js';
+//import { AlgoritmoGenetico, Individuo } from './objects.js';
 
 const canvas = document.getElementById('canvasOutput');
 const ctx = canvas.getContext('2d');
-canvas.width = 450;
-canvas.height = 300;
+canvas.width = 21;
+canvas.height = 10;
 const imgInput = document.getElementById('imageInput');
 const image = new Image();
 const maxGens = document.getElementById('input1');                  // maximo de generaciones
@@ -13,6 +13,10 @@ const percIndivsMutb = document.getElementById('input4');           // % individ
 const percIndivsComb = document.getElementById('input5');           // % individuos combinables
 const numGen = 1;
 const found = false;
+
+var targetImage = null;
+var widthImage = null;
+var heightImage = null;
 
 // mat.matSize = (height, length)
 
@@ -47,8 +51,15 @@ function startAlgorithm(){
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    var poblacion = new Poblacion(parseInt(maxGens.value));
-    poblacion.start();
+	var porcentajeMutacionPixel = 0.01;
+    var algoritmo = new AlgoritmoGenetico(parseInt(maxGens.value), parseInt(individuos.value), parseInt(percIndivsSelected.value), parseInt(percIndivsMutb.value), 
+	                                      porcentajeMutacionPixel, parseInt(percIndivsComb.value), targetImage.data, widthImage, heightImage);
+	
+    algoritmo.start();
+	for (var i = 0; i < algoritmo.mejorGeneracion.length; i++) {
+		var best = algoritmo.mejorGeneracion[i];
+		cv.imshow('canvasOutput', best.value);
+	}
 }
 
 imgInput.addEventListener('change', function(e) {
@@ -68,11 +79,9 @@ image.addEventListener('load', function(){
     const scannedImg = ctx.getImageData(0, 0, canvas.width, canvas.height);
     ctx.putImageData(scannedImg, 0, 0);
     // se inicializan variables globales dependientes de la imagen que se carga
-    const mat = cv.imread(scannedImg);
-    const width = mat.matSize[1];
-    const height = mat.matSize[0];
-    const mutationX = (width*height*4)/3;   // un tercio del array
-    const mutationY = 2*(mutationX);        // dos tercios del array
+    targetImage = cv.imread("canvasOutput");
+    widthImage = targetImage.matSize[1];
+    heightImage = targetImage.matSize[0];
 })
 
 function verifyParameters(){

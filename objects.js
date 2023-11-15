@@ -1,91 +1,122 @@
-class Poblacion {
+class AlgoritmoGenetico {
 
-    constructor(maxGeneraciones) {
-        this.generaciones = [];         // array de generaciones
-        this.max = maxGeneraciones;
+    constructor(maxGeneraciones, cantidadIndividuos, porcentajeSeleccion, porcentajeMutar, porcentajeMutacionPixel, porcentajeCombinar, target, width, height) {
+        this.maxGeneraciones = maxGeneraciones;
+		this.cantidadIndividuos = cantidadIndividuos;
+		this.porcentajeSeleccion = porcentajeSeleccion;
+		this.porcentajeMutar = porcentajeMutar;
+		this.porcentajeMutacionPixel = porcentajeMutacionPixel;
+		this.porcentajeCombinar = porcentajeCombinar;
+		this.target = target;
+		this.width = width;
+		this.height = height;
+		this.individuos = new Array();
+		this.mejorGeneracion = new Array();
     }
-
-    start(){
-        console.log('\nStarting...\n');
-        createInitialGen();
-    }
-}
-
-class Generacion {
-
-    constructor(num, maximo, target) {
-        this.individuos = [];           // array de individuos
-        this.number = num;              // numero de generacion
-        this.max = maximo;              // maximo de individuos
-        this.best = undefined;          // mejor individuo, este tendra el display en la interfaz
-
-        this.matingPool = [];           // array con los individuos seleccionados
-        this.crossable = [];            // array con los individuos que se van a cruzar
-        this.crossed = [];
-        this.mutables = [];             // array con los individuos que van a mutar
-        this.mutated = [];
-
-        for (let i = 0; i < max; i++) {
-            this.individuos.push(new Individuo(target, width, height, this.number));
+	
+	crearPoblacionInicial() {
+        for (let i = 0; i < this.cantidadIndividuos; i++) {
+            this.individuos.push(new Individuo(this.target, this.width, this.height, 1));
         }
-    }
+	}
+
 
     calculateMassiveFitness(){      // calcula el fitness de todos los individuos de la generacion
-
         for(let i = 0; i < this.individuos.length; i++) {
             this.individuos[i].fitness();
         }
     }
 
-    selection(percentage){
-
+    selection(){
         this.individuos.sort((a, b) => b.score - a.score);  // se acomoda el array en base al score de
                                                             // los individuos de mayor a menor
-        const numberOfElementsToAdd = Math.ceil((percentage / 100) * this.individuos.length);
+        const numberOfElementsToAdd = Math.ceil((this.porcentajeSeleccion / 100) * this.individuos.length);
 
-        this.matingPool = this.individuos.slice(0, numberOfElementsToAdd);
-        
-        return this.matingPool;
+        return this.individuos.slice(0, numberOfElementsToAdd);
     }
+	
+    rouletteWheelSelection() {
+		const totalFitness = this.individuos.reduce((acc, individuo) => acc + 1 / individuo.score, 0);  
+		const rand = Math.random() * totalFitness; 
+		let runningSum = 0;
+		let seleccion = null;
 
-    selectCrossable(percentage){
+		for (let i = 0; i < this.individuos.length; i++) {
+			const fitness = 1 / this.individuos[i].score;
+			runningSum += fitness;
+			if (runningSum >= rand) {
+				seleccion = this.individuos[i];
+				break;
+			}
+		}
+		return seleccion;
+	}	
+	
 
-        const numberOfElementsToSelect = Math.ceil((percentage / 100) * this.matingPool.length);
+	crossover(numeroNuevosHijos) {
+		let hijos = [];
+		//const numeroNuevosHijos = Math.ceil((this.porcentajeCombinar / 100) * this.individuos.length);
+		for (var i = 0; i < numeroNuevosHijos; i++) {
+			
+			let padre1 = this.rouletteWheelSelection();
+			let padre2 = this.rouletteWheelSelection();
 
-        // Fisher-Yates algorithm
-        for (let i = this.matingPool.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [this.matingPool[i], this.matingPool[j]] = [this.matingPool[j], this.matingPool[i]];
-        }
+			const start = Math.floor(Math.random() * padre1.value.length);
+			const end = Math.floor(Math.random() * (padre2.value.length - start)) + start;
 
-        this.crossable = this.matingPool.slice(0, numberOfElementsToSelect);
+			let valueChild = padre1.value.slice(0, start);
+			
+			let hijo = padre1.clonar();
+			for (let i = 0; i < start; i++) {
+			  hijo.value[i] = padre1.value[i];
+			}
+			
+			for (let i = start; i < end; i++) {
+			  hijo.value[i] = padre2.value[i];
+			}
+			for (let i = end; i < padre1.value.length; i++) {
+			  hijo.value[i] = padre1.value[i];
+			}
+			hijos.push(hijo);
+		}
+		return hijos;
+	}
+	
+    start(){
+        console.log('\nStarting...\n');
+		this.crearPoblacionInicial();
+		this.calculateMassiveFitness();
+		
+		//evolución
+		for (var gen = 0; gen < this.maxGeneraciones; gen++) {
+			let nuevaPoblacion;
+			
+			//1. Seleccionar
+			nuevaPoblacion = this.selection(); //10
+			
+			//2. cruzar
+			let hijos = this.crossover(this.cantidadIndividuos-nuevaPoblacion.length); //90
+			for (var i = 0; i < hijos.length; i++) {
+				nuevaPoblacion.push(hijos[i]);
+			}
 
-        return this.crossable;
+			//3. mutar
+			const cantidadMutacion = Math.ceil((this.porcentajeMutar / 100) * this.cantidadIndividuos); //5
+			for (var i = 0; i < cantidadMutacion; i++) {
+				const selIndividuoMutar = Math.floor(Math.random() * this.cantidadIndividuos);
+				nuevaPoblacion[selIndividuoMutar].mutar(this.porcentajeMutacionPixel);
+			}
+			//4. formar siguiente generacion
+			this.individuos = nuevaPoblacion;
+			this.calculateMassiveFitness();
+
+			//5. escoger los mejores
+			this.individuos.sort((a, b) => b.score - a.score); 
+					
+			this.mejorGeneracion.push(this.individuos[0]);
+			
+		}
     }
-
-    crossover(){
-        return this.crossed;
-    }
-
-    selectMutable(percentage){  // incompleto, ahorita es un copy paste de selectCrossable por lo que si se deja asi estaria
-                                // agregando parte de los individuos agregados a this.crossable en this.mutable
-
-        const numberOfElementsToSelect = Math.ceil((percentage / 100) * this.matingPool.length);
-
-        // Fisher-Yates algorithm
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        this.mutable = this.matingPool.slice(0, numberOfElementsToSelect);
-
-        return this.mutable;
-    }
-
-    mutate(){
-        // mutar en generacion o en individuo?
-    }
-
 }
 
 class Individuo {
@@ -95,56 +126,61 @@ class Individuo {
     constructor(target, width, height, gen) {
         this.target = target;
         this.score = 0;
-        this.gen = gen
-        this.value = function() {
-            const pixelArray = new Uint8Array(width * height * 4);
-
-            for (let iPixel = 0; iPixel < width * height; iPixel++) {
-				var random = Math.random();
-				pixelArray[(iPixel*4)] = random < 0.5 ? 0:255;
-				pixelArray[(iPixel*4)+1] = random < 0.5 ? 0:255;
-				pixelArray[(iPixel*4)+2] = random < 0.5 ? 0:255;
-				pixelArray[(iPixel*4)+3] = 255;
-			}
-
-            return pixelArray;
-        }
+		this.diferencia = 0;
+        this.gen = gen;
+		this.width = width;
+		this.height = height;
+		const pixelArray = new Uint8Array(width * height * 4);
+		for (let iPixel = 0; iPixel < width * height; iPixel++) {
+			var random = Math.random();
+			pixelArray[(iPixel*4)] = random < 0.5 ? 0:255;
+			pixelArray[(iPixel*4)+1] = random < 0.5 ? 0:255;
+			pixelArray[(iPixel*4)+2] = random < 0.5 ? 0:255;
+			pixelArray[(iPixel*4)+3] = 255;
+		}
+        this.value = pixelArray;
     }
 
     fitness() {
+		this.score = 0;
         for (let i = 0; i < this.value.length; i++) {
             if (this.value[i] != this.target[i]) {
-                this.score += Math.abs(this.value[i] - this.target[i]);
-                // diferencia += 1; opcion 2
+                this.score += 1;//Math.abs(this.value[i] - this.target[i]);
             }
         }
+		this.diferencia = this.score;
+		if(this.score != 0) {
+			this.score = 1 / this.score;  
+		}
         return this.score;
     }
 
-    mutate(startIndex, endIndex){
-        // se calcula el numero de pixeles a revolver
-        const numPixelsToScramble = Math.floor((endIndex - startIndex + 1) / 4);
+	clonar() {
+		let nuevo = new Individuo(this.target, this.width, this.height, this.gen);
+		for (var i = 0; i < this.value.length; i++) {
+			nuevo.value[i] = this.value[i];
+		}
+		return nuevo;
+	}
 
-        // se generan indices random
-        var randomIndices = [];
-        for (let i = 0; i < numPixelsToScramble; i++) {
-            const randomPixelIndex = Math.floor(Math.random() * numPixelsToScramble) * 4;
-            randomIndices.push(randomPixelIndex);
-        }
-
-        // se revuelven los pixeles
-        for (const randomIndex of randomIndices) {
-            for (let i = 0; i < 4; i++) {
-                if(i < 3){
-                    const pixelIndex = startIndex + randomIndex + i;
-                    // de 0 a 255 y viceversa
-                    this.value[pixelIndex] = Math.abs(255 - this.value[pixelIndex]);
-                } else{
-                    continue
-                }
-            }
-        }
+    mutar(porcentajeMutacionPixel){
+		const cantPixeles = this.width * this.height;
+		const cantMutar = 1 + Math.floor((Math.random() * Math.floor(cantPixeles*porcentajeMutacionPixel/100)));
+		
+		for (let iMutacion = 0; iMutacion < cantMutar; iMutacion++) {
+			const iPixel = Math.floor(Math.random() * cantPixeles);
+			if (this.value[iPixel*4] == 255) {
+				this.value[(iPixel*4)] = 0;
+				this.value[(iPixel*4)+1] = 0;
+				this.value[(iPixel*4)+2] = 0;
+			}
+			else {
+				this.value[(iPixel*4)] = 255;
+				this.value[(iPixel*4)+1] = 255;
+				this.value[(iPixel*4)+2] = 255;
+			}
+		}
     }
 }
 
-export { Poblacion, Generacion, Individuo };
+//export { AlgoritmoGenetico, Individuo };
