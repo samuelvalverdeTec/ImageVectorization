@@ -1,9 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200&display=swap');
+
 *{
     margin: 0;
     padding: 0;
     outline: none;
     box-sizing: border-box;
-    font-family: sans-serif;
 }
 body{
     width: 100%;
@@ -75,7 +76,6 @@ body{
     background-color: #cd5858;
     color: #fff;
 }
-
 .inputs .input-data{
     height: 40px;
     width: 100%;
