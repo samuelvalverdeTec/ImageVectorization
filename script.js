@@ -30,6 +30,8 @@ function algorithm(gen){    // simulacion
     .
     .
     */
+    var best = gen.best;
+    cv.imshow('canvasOutput', best);
     numGen += 1;
     algorithm(new Generacion(numGen, individuos, mat));
 }
