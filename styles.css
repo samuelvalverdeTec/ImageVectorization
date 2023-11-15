@@ -110,11 +110,23 @@ body{
     display: flex;
     position: absolute;
     width: 20%;
-    height: 10%;
+    height: 12%;
     top: 0;
     right: 0;
     background-color: #ffffff;
-    color: #fff;
+    color: #000;
+    padding: 10px;
+}
+
+.numGen{
+    display: flex;
+    position: absolute;
+    width: 20%;
+    height: 12%;
+    top: 0;
+    left: 0;
+    background-color: #ffffff;
+    color: #000;
     padding: 10px;
 }
 

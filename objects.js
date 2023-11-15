@@ -1,6 +1,8 @@
+
+
 class AlgoritmoGenetico {
 
-    constructor(maxGeneraciones, cantidadIndividuos, porcentajeSeleccion, porcentajeMutar, porcentajeMutacionPixel, porcentajeCombinar, target, width, height) {
+    constructor(maxGeneraciones, cantidadIndividuos, porcentajeSeleccion, porcentajeMutar, porcentajeMutacionPixel, porcentajeCombinar, target, width, height, fnAnimate) {
         this.maxGeneraciones = maxGeneraciones;
 		this.cantidadIndividuos = cantidadIndividuos;
 		this.porcentajeSeleccion = porcentajeSeleccion;
@@ -12,6 +14,10 @@ class AlgoritmoGenetico {
 		this.height = height;
 		this.individuos = new Array();
 		this.mejorGeneracion = new Array();
+		this.AnimateFunction = fnAnimate;
+		this.timerEvolucion = null;
+		this.generacionActual = 0;
+		this.tiempoPorGeneracion = new Array();
     }
 	
 	crearPoblacionInicial() {
@@ -53,7 +59,8 @@ class AlgoritmoGenetico {
 	}	
 	
 
-	crossover(numeroNuevosHijos) {
+	crossover(numeroNuevosHijos) {     
+		const cantPixeles = this.width * this.height;
 		let hijos = [];
 		//const numeroNuevosHijos = Math.ceil((this.porcentajeCombinar / 100) * this.individuos.length);
 		for (var i = 0; i < numeroNuevosHijos; i++) {
@@ -61,8 +68,12 @@ class AlgoritmoGenetico {
 			let padre1 = this.rouletteWheelSelection();
 			let padre2 = this.rouletteWheelSelection();
 
-			const start = Math.floor(Math.random() * padre1.value.length);
-			const end = Math.floor(Math.random() * (padre2.value.length - start)) + start;
+			
+			let start = Math.floor(Math.random() * cantPixeles);
+			let end = Math.floor(Math.random() * (cantPixeles - start)) + start;
+
+			start = start * 4;
+			end = end * 4;
 
 			let valueChild = padre1.value.slice(0, start);
 			
@@ -82,13 +93,16 @@ class AlgoritmoGenetico {
 		return hijos;
 	}
 	
-    start(){
-        console.log('\nStarting...\n');
-		this.crearPoblacionInicial();
-		this.calculateMassiveFitness();
-		
-		//evolución
-		for (var gen = 0; gen < this.maxGeneraciones; gen++) {
+	evolucion() {
+		if (this.timerEvolucion != null) {
+			clearTimeout(this.timerEvolucion);
+			this.timerEvolucion = null;
+		}
+		if (this.generacionActual < this.maxGeneraciones) {
+				
+			var startDate = new Date();
+			
+			//inicio la evolucion
 			let nuevaPoblacion;
 			
 			//1. Seleccionar
@@ -108,14 +122,43 @@ class AlgoritmoGenetico {
 			}
 			//4. formar siguiente generacion
 			this.individuos = nuevaPoblacion;
+			for (var i = 0; i < this.cantidadIndividuos; i++) {
+				this.individuos[i].gen = this.generacionActual;
+				this.individuos[i].id = i;
+				this.individuos[i].revisar();
+			}
 			this.calculateMassiveFitness();
 
 			//5. escoger los mejores
 			this.individuos.sort((a, b) => b.score - a.score); 
 					
 			this.mejorGeneracion.push(this.individuos[0]);
+			//termina la evolucion
 			
+			var endDate   = new Date();
+			var seconds = (endDate.getTime() - startDate.getTime()) / 1000;
+			this.tiempoPorGeneracion.push(seconds);
+			
+			this.AnimateFunction(this.individuos[0], this.generacionActual);
+			this.generacionActual += 1;
+			this.timerEvolucion = setTimeout(Evolucion, 1000);
 		}
+	}
+	
+    start(){
+        console.log('\nStarting...\n');
+		this.crearPoblacionInicial();
+		this.calculateMassiveFitness();
+		
+		//evolución
+		this.generacionActual = 0;
+		this.evolucion();
+/*		
+		this.generacionActual = 0;
+		while (this.generacionActual < this.maxGeneraciones) {
+			this.evolucion();
+		}
+*/		
     }
 }
 
@@ -128,8 +171,10 @@ class Individuo {
         this.score = 0;
 		this.diferencia = 0;
         this.gen = gen;
+		this.id = 0;
 		this.width = width;
 		this.height = height;
+		this.timer = 0;
 		const pixelArray = new Uint8Array(width * height * 4);
 		for (let iPixel = 0; iPixel < width * height; iPixel++) {
 			var random = Math.random();
@@ -181,6 +226,31 @@ class Individuo {
 			}
 		}
     }
+	
+	revisar() {
+		var error = -1;
+		const cantPixeles = this.width * this.height;
+		for (var iPixel = 0; iPixel < cantPixeles; iPixel++) {
+			if (this.value[iPixel*4] == 255 && 
+			    (this.value[(iPixel*4)+1] == 0 || this.value[(iPixel*4)+2] == 0)) {
+				error = iPixel;
+				break;
+			}
+			else if (this.value[iPixel*4] == 0 && 
+			    (this.value[(iPixel*4)+1] == 255 || this.value[(iPixel*4)+2] == 255)) {
+				error = iPixel;
+				break;
+			}
+			else if (this.value[iPixel*4 +3] != 255) {
+				error = iPixel;
+				break;
+			}
+		}
+		if (error != -1) {
+			console.log("Error revisando individuo: " + this.gen + ", " + this.id + ", " + error);
+		}
+		return iPixel;
+	}
 }
 
 //export { AlgoritmoGenetico, Individuo };

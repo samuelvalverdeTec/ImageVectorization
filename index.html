@@ -23,19 +23,19 @@
 			
             <div class="inputs">
                 <div class="input-data">
-                    <input type="text" required="required" id="input1" value="120">
+                    <input type="text" required="required" id="input1" value="1000">
                     <label>Cantidad de generaciones máxima
                 </div>
             </div>
             <div class="inputs">
                 <div class="input-data">
-                    <input type="text" required="required" id="input2" value="100">
+                    <input type="text" required="required" id="input2" value="300">
                     <label>Cantidad de individuos de la población
                 </div>
             </div>
             <div class="inputs">
                 <div class="input-data">
-                    <input type="text" required="required" id="input3" value="12">
+                    <input type="text" required="required" id="input3" value="15">
                     <label>Individuos que se seleccionarán entre cada generación (%)
                 </div>
             </div>
@@ -47,16 +47,19 @@
             </div>
             <div class="inputs">
                 <div class="input-data">
-                    <input type="text" required="required" id="input5" value="83">
+                    <input type="text" required="required" id="input5" value="80">
                     <label>Individuos que se les permitirá combinar (%)
                 </div>
             </div>
         </div>
         <div class="o-container">
             <div class="display">
-                <div class="timer">
+                <div class="timer" id="timerTotal">
                     Tiempo total
                 </div>
+                <div class="numGen" id="numGeneracion">
+                    Generación:
+                </div>				
                 <canvas id="canvasOutput"></canvas>
             </div>
         </div>
