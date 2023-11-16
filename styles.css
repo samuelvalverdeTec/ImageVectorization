@@ -53,7 +53,7 @@ body{
     font-style: oblique;
     font-size: 16px;
     color: #fff;
-    background: transparent;
+    background: rgba(0, 0, 0, 0.5);;
 }
 .inputs:nth-child(1){
     font-size: 24px;
@@ -91,7 +91,7 @@ body{
 .o-container .display{
     display: flex;
     height: 90%;
-    background-color: black;
+    background-color: rgba(0, 0, 0, 0.5);
     text-align: center;
     align-items: center;
     justify-content: center;
@@ -108,25 +108,27 @@ body{
 }
 .o-container .display .timer{
     display: flex;
+    align-content: center;
     position: absolute;
     width: 20%;
     height: 12%;
-    top: 0;
-    right: 0;
-    background-color: #ffffff;
-    color: #000;
+    top: 5;
+    right: 25;
+    background-color: transparent;
+    color: #ffffff;
     padding: 10px;
 }
 
 .numGen{
     display: flex;
+    align-content: center;
     position: absolute;
     width: 20%;
-    height: 12%;
-    top: 0;
-    left: 0;
-    background-color: #ffffff;
-    color: #000;
+    height: 18%;
+    top: 5;
+    left: 25;
+    background-color: transparent;
+    color: #ffffff;
     padding: 10px;
 }
 

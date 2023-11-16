@@ -50,7 +50,8 @@ function MostrarGeneracion(individuo, gen) {
 	
 	infoGraficoBestScore.push([individuo.gen, individuo.score] );	
 	
-	divNumGen.innerHTML = "Generación: " + individuo.gen + "<br>" + avg + " segs." + "<br>" + avg2;
+	divNumGen.innerHTML = "Generación: " + individuo.gen + "<br>Duración: " + avg + " segs." + "<br>Fitness promedio: " + avg2
+    + "<br>Mejor fitness: " + (Math.round(individuo.score * 10000) / 10000).toFixed(4);
 	
 	
 }
@@ -62,7 +63,7 @@ function Evolucion() {
 
 function refrescarTimer() {
 	contadorSegundos += 1;
-	timerTotal.innerHTML = "Tiempo Total: \<br>" + contadorSegundos + " seg. ";
+	timerTotal.innerHTML = "Tiempo Total:<br>" + contadorSegundos + " segs. ";
 }
 
 
